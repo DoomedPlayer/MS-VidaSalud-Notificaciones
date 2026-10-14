@@ -18,7 +18,7 @@ public class EmailNotificationConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(EmailNotificationConsumer.class);
 
-    @RabbitListener(queues = "${rabbitmq.queues.email")
+    @RabbitListener(queues = "${rabbitmq.queues.email}")
     public void processEmailMessage(Message message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws IOException {
         String payload = new String(message.getBody());
         log.info("📩 Mensaje recibido en q.cmd.email: {}", payload);
