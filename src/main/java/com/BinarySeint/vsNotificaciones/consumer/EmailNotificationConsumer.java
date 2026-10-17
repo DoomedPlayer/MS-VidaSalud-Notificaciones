@@ -54,11 +54,13 @@ public class EmailNotificationConsumer {
                 cuerpo += "¡Su cita ha sido confirmada! Lo esperamos en nuestro centro médico en la fecha y hora agendada.\n\n";
             } else if ("CERRADA".equals(estado)) {
                 cuerpo += "Su atención médica ha finalizado exitosamente. Muchas gracias por preferir la Red de Centros VidaSalud. En breve se generará su comprobante de atención.\n\n";
+            } else if ("CANCELADA".equals(estado)) {
+                cuerpo += "Lamentamos informarle que su cita médica ha sido cancelada. Si desea reagendar su atención, por favor ingrese a nuestro portal web o contáctese con nosotros.\n\n";
             } else {
                 cuerpo += "El estado de su atención ha cambiado a: " + estado + ".\n\n";
             }
 
-            if (!"CERRADA".equals(estado)) {
+            if (!"CERRADA".equals(estado) && !"CANCELADA".equals(estado)) {
                 cuerpo += "📋 DETALLES DE LA ATENCIÓN:\n";
                 cuerpo += "--------------------------------------------------\n";
                 cuerpo += "• N° de Atención : " + idAtencion + "\n";
