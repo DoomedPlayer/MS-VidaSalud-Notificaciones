@@ -38,21 +38,38 @@ public class EmailNotificationConsumer {
             JsonNode dataNode = rootNode.path("data");
             String nombrePaciente = dataNode.path("nombrePaciente").asText();
             String estado = dataNode.path("estado").asText();
+            long idAtencion = dataNode.path("id").asLong();
+
+            String fecha = dataNode.path("fechaCreacion").asText(); 
+            String prestacionId = dataNode.path("prestacionId").asText();
 
             String correoDestino = "ni.beeger@duocuc.cl"; 
             String asunto = "Notificación de su Cita Médica - VidaSalud";
+
             String cuerpo = "Hola " + nombrePaciente + ",\n\n";
 
             if ("SOLICITADA".equals(estado)) {
-                cuerpo += "Su cita ha sido registrada exitosamente en nuestro sistema y está a la espera de confirmación.";
+                cuerpo += "Su cita ha sido registrada exitosamente en nuestro sistema y está a la espera de confirmación.\n\n";
             } else if ("CONFIRMADA".equals(estado)) {
-                cuerpo += "¡Su cita ha sido confirmada! Lo esperamos en nuestro centro médico en la fecha y hora agendada.";
+                cuerpo += "¡Su cita ha sido confirmada! Lo esperamos en nuestro centro médico en la fecha y hora agendada.\n\n";
+            } else if ("CERRADA".equals(estado)) {
+                cuerpo += "Su atención médica ha finalizado exitosamente. Muchas gracias por preferir la Red de Centros VidaSalud. En breve se generará su comprobante de atención.\n\n";
             } else {
-                cuerpo += "El estado de su atención ha cambiado a: " + estado + ".";
+                cuerpo += "El estado de su atención ha cambiado a: " + estado + ".\n\n";
             }
 
-            cuerpo += "\n\nSaludos,\nRed de Centros VidaSalud.";
+            if (!"CERRADA".equals(estado)) {
+                cuerpo += "📋 DETALLES DE LA ATENCIÓN:\n";
+                cuerpo += "--------------------------------------------------\n";
+                cuerpo += "• N° de Atención : " + idAtencion + "\n";
+                cuerpo += "• Fecha y Hora   : " + fecha + "\n";
+                cuerpo += "• ID Prestación  : " + prestacionId + "\n";
+                cuerpo += "--------------------------------------------------\n\n";
+            }
 
+            cuerpo += "Saludos,\nRed de Centros VidaSalud.";
+
+            // 5. Envío del correo
             emailSenderService.enviarCorreo(correoDestino, asunto, cuerpo);
 
             log.info("✅ Correo enviado exitosamente a: " + correoDestino + " con estado: " + estado);
