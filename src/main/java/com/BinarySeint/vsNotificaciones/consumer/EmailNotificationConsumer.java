@@ -40,15 +40,22 @@ public class EmailNotificationConsumer {
             String estado = dataNode.path("estado").asText();
 
             String correoDestino = "ni.beeger@duocuc.cl"; 
+            String asunto = "Notificación de su Cita Médica - VidaSalud";
+            String cuerpo = "Hola " + nombrePaciente + ",\n\n";
 
-            String asunto = "Actualización de su Cita Médica";
-            String cuerpo = "Hola " + nombrePaciente + ",\n\n" +
-                            "El estado de su cita ha cambiado a: " + estado + ".\n\n" +
-                            "Saludos,\nClínica VidaSalud.";
+            if ("SOLICITADA".equals(estado)) {
+                cuerpo += "Su cita ha sido registrada exitosamente en nuestro sistema y está a la espera de confirmación.";
+            } else if ("CONFIRMADA".equals(estado)) {
+                cuerpo += "¡Su cita ha sido confirmada! Lo esperamos en nuestro centro médico en la fecha y hora agendada.";
+            } else {
+                cuerpo += "El estado de su atención ha cambiado a: " + estado + ".";
+            }
+
+            cuerpo += "\n\nSaludos,\nRed de Centros VidaSalud.";
 
             emailSenderService.enviarCorreo(correoDestino, asunto, cuerpo);
 
-            log.info("✅ Correo enviado exitosamente a: " + correoDestino);
+            log.info("✅ Correo enviado exitosamente a: " + correoDestino + " con estado: " + estado);
             channel.basicAck(deliveryTag, false);
 
         } catch (Exception e) {
